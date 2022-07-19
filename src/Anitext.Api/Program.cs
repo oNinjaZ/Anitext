@@ -7,10 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DataContext>(opts =>
     opts.UseNpgsql(builder.Configuration.GetValue<string>("Database:ConnectionString")))
-    .AddSingleton<IQuoteRepository, QuoteRepository>()
-    .AddSingleton<ICharacterRepository, CharacterRepository>()
-    .AddSingleton<IAliasRepository, AliasRepository>()
-    .AddSingleton<IAnimeRepository, AnimeRepository>();
+    .AddScoped<IQuoteRepository, QuoteRepository>()
+    .AddScoped<ICharacterRepository, CharacterRepository>()
+    .AddScoped<IAliasRepository, AliasRepository>()
+    .AddScoped<IAnimeRepository, AnimeRepository>();
 
 var app = builder.Build();
 
