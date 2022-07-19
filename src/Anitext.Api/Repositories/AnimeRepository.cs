@@ -1,31 +1,44 @@
+using Anitext.Api.Data;
 using Anitext.Api.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Anitext.Api.Repositories;
 
 public class AnimeRepository : IAnimeRepository
 {
-    public Task<bool> CreateAsync(Anime alias)
+    private readonly DataContext _context;
+    public AnimeRepository(DataContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
 
-    public Task<bool> Delete(int id)
+    public async Task<bool> CreateAsync(Anime anime)
     {
-        throw new NotImplementedException();
+        _context.Anime.Add(anime);
+        return await _context.SaveChangesAsync() > 0;
     }
 
-    public Task<IEnumerable<Anime>> GetAllAsync()
+    public async Task<IEnumerable<Anime>> GetAllAsync()
+        => await _context.Anime.ToListAsync();
+
+
+    public async Task<Anime?> GetByIdAsync(int id)
+        => await _context.Anime.FindAsync(id);
+
+    public async Task<bool> DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        if (await GetByIdAsync(id) is not Anime anime)
+            return false;
+
+        _context.Remove(anime);
+        return await _context.SaveChangesAsync() > 0;
     }
 
-    public Task<Anime?> GetByIdAsync(int id)
+    public async Task<bool> UpdateAsync(Anime alias)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> Update(Anime alias)
-    {
-        throw new NotImplementedException();
+        if (await GetByIdAsync(alias.Id) is not Anime anime)
+            return false;
+        _context.Update(alias);
+        return await _context.SaveChangesAsync() > 0;
     }
 }

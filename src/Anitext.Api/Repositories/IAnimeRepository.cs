@@ -6,7 +6,7 @@ public interface IAnimeRepository
 {
     Task<IEnumerable<Anime>> GetAllAsync();
     Task<Anime?> GetByIdAsync(int id);
-    Task<bool> CreateAsync(Anime alias);
-    Task<bool> Update(Anime alias);
-    Task<bool> Delete(int id);
+    Task<bool> CreateAsync(Anime anime);
+    Task<bool> UpdateAsync(Anime anime);
+    Task<bool> DeleteAsync(int id);
 }
