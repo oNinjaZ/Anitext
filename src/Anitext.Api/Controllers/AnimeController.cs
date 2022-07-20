@@ -1,4 +1,4 @@
-using Anitext.Api.Dtos.Anime;
+using Anitext.Api.Mappers;
 using Anitext.Api.Models;
 using Anitext.Api.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +16,12 @@ public class AnimeController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] AnimeDto dto)
+    public async Task<IActionResult> Post([FromBody] Anime anime)
     {
-        await _animeRepo.CreateAsync(new Anime
-        {
-            Title = dto.Title
-        });
+        var created = await _animeRepo.CreateAsync(anime);
 
+        if (!created)
+            return BadRequest();
         return Ok();
     }
 
@@ -30,28 +29,25 @@ public class AnimeController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var anime = await _animeRepo.GetAllAsync();
-        return Ok(anime);
+        return Ok(anime.Select(a => a.AsDto()));
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        if (await _animeRepo.GetByIdAsync(id) is not Anime anime)
+        if (await _animeRepo.FindByIdAsync(id) is not Anime anime)
             return NotFound();
-        return Ok(anime);
+        return Ok(anime.AsDto());
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] AnimeDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] Anime anime)
     {
-        var updated = await _animeRepo.UpdateAsync(new Anime
-        {
-            Id = id,
-            Title = dto.Title
-        });
+        anime.Id = id;
+        var updated = await _animeRepo.UpdateAsync(anime);
 
         if (!updated)
-            return BadRequest();
+            return NotFound();
         return Ok();
     }
 
@@ -62,5 +58,4 @@ public class AnimeController : ControllerBase
             ? Ok()
             : NotFound();
     }
-
 }
