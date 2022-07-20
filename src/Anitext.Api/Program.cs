@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DataContext>(opts =>
     opts.UseNpgsql(builder.Configuration.GetValue<string>("Database:ConnectionString")))
@@ -15,5 +18,12 @@ builder.Services.AddDbContext<DataContext>(opts =>
 var app = builder.Build();
 
 app.MapControllers();
+
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.Run();
