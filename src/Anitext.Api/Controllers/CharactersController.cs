@@ -1,3 +1,4 @@
+using Anitext.Api.Dtos.Character;
 using Anitext.Api.Mappers;
 using Anitext.Api.Models;
 using Anitext.Api.Repositories;
@@ -9,15 +10,26 @@ namespace Anitext.Api.Controllers;
 public class CharactersController : ControllerBase
 {
     private readonly ICharacterRepository _charRepo;
-    public CharactersController(ICharacterRepository charRepo)
+    private readonly IAnimeRepository _animeRepo;
+    public CharactersController(ICharacterRepository charRepo, IAnimeRepository animeRepo)
     {
         _charRepo = charRepo;
+        _animeRepo = animeRepo;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Character character)
+    public async Task<IActionResult> Post([FromBody] CharacterPostPutDto dto)
     {
-        var created = await _charRepo.CreateAsync(character);
+        // todo validation 
+        
+        if (await _animeRepo.FindByIdAsync(dto.AnimeId) is null)
+            return BadRequest($"Anime with the ID of {dto.AnimeId} does not exist.");
+
+        var created = await _charRepo.CreateAsync(new Character
+        {
+            Name = dto.Name,
+            AnimeId = dto.AnimeId
+        });
 
         if (!created)
             return BadRequest();

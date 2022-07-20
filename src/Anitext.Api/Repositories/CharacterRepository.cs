@@ -21,20 +21,28 @@ public class CharacterRepository : ICharacterRepository
     }
 
     public async Task<IEnumerable<Character>> GetAllAsync()
-        => await _context.Character.ToListAsync();
+        => await _context.Character
+            .AsNoTracking()
+            .Include(c => c.Anime)
+            .ToListAsync();
 
     public async Task<Character?> FindByIdAsync(int id)
-        => await _context.Character.FindAsync(id);
+        => await _context.Character
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id);
+
 
     public async Task<Character?> FindByNameAsync(string name)
-        => await _context.Character.FirstOrDefaultAsync(c => c.Name == name);
+        => await _context.Character
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Name.ToUpper() == name.ToUpper());
 
     public async Task<bool> UpdateAsync(Character character)
     {
         if (await FindByIdAsync(character.Id) is null)
             return false;
 
-        _context.Character.Update(character);
+        _context.Update(character);
         return await _context.SaveChangesAsync() > 0;
     }
 

@@ -8,6 +8,6 @@ public class Character
                     
     public Anime Anime { get; set; } = default!;
     public List<Alias>? Aliases { get; set; }
-    public List<Quote>? Quotes { get; set; }
+    public List<Quote> Quotes { get; set; } = new();
 
 }

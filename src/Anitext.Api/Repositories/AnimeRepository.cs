@@ -22,23 +22,37 @@ public class AnimeRepository : IAnimeRepository
     }
 
     public async Task<IEnumerable<Anime>> GetAllAsync()
-        => await _context.Anime.ToListAsync();
+        =>  await _context.Anime
+                .AsNoTracking()
+                .Include(a => a.Characters)
+                .ToListAsync();
 
     public async Task<Anime?> FindByIdAsync(int id)
-        => await _context.Anime.FindAsync(id);
+        =>  await _context.Anime
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+    public async Task<Anime?> FindByIdIncludeCharacterQuotesAsync(int id)
+        =>  await _context.Anime
+                .Include(a => a.Characters)
+                .ThenInclude(c => c.Quotes)
+                .FirstOrDefaultAsync(a => a.Id == id);
+    
 
     public async Task<Anime?> FindByTitleAsync(string title)
-        => await _context.Anime.FirstOrDefaultAsync(a => a.Title == title);
+        => await _context.Anime
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Title.ToUpper() == title.ToUpper());
 
     public async Task<bool> UpdateAsync(Anime anime)
     {
         if (await FindByIdAsync(anime.Id) is null)
             return false;
 
-        _context.Anime.Update(anime);
+        _context.Update(anime);
         return await _context.SaveChangesAsync() > 0;
     }
-    
+
     public async Task<bool> DeleteAsync(int id)
     {
         if (await FindByIdAsync(id) is not Anime anime)

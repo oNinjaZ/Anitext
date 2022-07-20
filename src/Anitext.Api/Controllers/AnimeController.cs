@@ -1,3 +1,4 @@
+using Anitext.Api.Dtos.Anime;
 using Anitext.Api.Mappers;
 using Anitext.Api.Models;
 using Anitext.Api.Repositories;
@@ -16,9 +17,9 @@ public class AnimeController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Anime anime)
+    public async Task<IActionResult> Post([FromBody] AnimePostPutDto dto)
     {
-        var created = await _animeRepo.CreateAsync(anime);
+        var created = await _animeRepo.CreateAsync(new Anime { Title = dto.Title });
 
         if (!created)
             return BadRequest();
@@ -35,7 +36,7 @@ public class AnimeController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        if (await _animeRepo.FindByIdAsync(id) is not Anime anime)
+        if (await _animeRepo.FindByIdIncludeCharacterQuotesAsync(id) is not Anime anime)
             return NotFound();
         return Ok(anime.AsDto());
     }
