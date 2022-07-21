@@ -42,9 +42,12 @@ public class AnimeController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Anime anime)
+    public async Task<IActionResult> Update(int id, [FromBody] AnimePostPutDto dto)
     {
-        anime.Id = id;
+        if (await _animeRepo.FindByIdAsync(id) is not Anime anime)
+            return NotFound();
+            
+        anime.Title = dto.Title;
         var updated = await _animeRepo.UpdateAsync(anime);
 
         if (!updated)

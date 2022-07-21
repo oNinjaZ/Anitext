@@ -39,9 +39,6 @@ public class CharacterRepository : ICharacterRepository
 
     public async Task<bool> UpdateAsync(Character character)
     {
-        if (await FindByIdAsync(character.Id) is null)
-            return false;
-
         _context.Update(character);
         return await _context.SaveChangesAsync() > 0;
     }

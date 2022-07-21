@@ -46,9 +46,6 @@ public class AnimeRepository : IAnimeRepository
 
     public async Task<bool> UpdateAsync(Anime anime)
     {
-        if (await FindByIdAsync(anime.Id) is null)
-            return false;
-
         _context.Update(anime);
         return await _context.SaveChangesAsync() > 0;
     }

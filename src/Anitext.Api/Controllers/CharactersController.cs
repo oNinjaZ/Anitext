@@ -21,7 +21,7 @@ public class CharactersController : ControllerBase
     public async Task<IActionResult> Post([FromBody] CharacterPostPutDto dto)
     {
         // todo validation 
-        
+
         if (await _animeRepo.FindByIdAsync(dto.AnimeId) is null)
             return BadRequest($"Anime with the ID of {dto.AnimeId} does not exist.");
 
@@ -52,9 +52,12 @@ public class CharactersController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Character character)
+    public async Task<IActionResult> Update(int id, [FromBody] CharacterPostPutDto dto)
     {
-        character.Id = id;
+        if (await _charRepo.FindByIdAsync(id) is not Character character)
+            return NotFound();
+
+        character.Name = dto.Name;
         var updated = await _charRepo.UpdateAsync(character);
 
         if (!updated)
