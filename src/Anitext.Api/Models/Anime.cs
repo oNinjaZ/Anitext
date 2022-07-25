@@ -5,5 +5,4 @@ public class Anime
     public string Title { get; set; } = default!;
 
     public List<Character> Characters { get; set; } = new();
-    public List<Quote> Quotes { get; set; } = new();
 }

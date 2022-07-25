@@ -25,11 +25,6 @@ public class DataContext : DbContext
             .HasOne(c => c.Anime)
             .WithMany(a => a.Characters)
             .HasForeignKey(c => c.AnimeId);
-
-        modelBuilder.Entity<Quote>()
-            .HasOne(q => q.Anime)
-            .WithMany(a => a.Quotes)
-            .HasForeignKey(q => q.AnimeId);
         
         modelBuilder.Entity<Quote>()
             .HasOne(q => q.Character)
